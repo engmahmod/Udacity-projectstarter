@@ -10,6 +10,7 @@ commands:
           command: |
             aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
             aws cloudformation delete-stack --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws s3 rm s3://"udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
 
 jobs:
   build-frontend:
@@ -159,6 +160,7 @@ jobs:
           command: |
             apk add --update ansible 
             python -m pip install awscli
+            python -m pip install yum
             yum install -y tar gzip awscli
       # attach workspace
       - attach_workspace:
