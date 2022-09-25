@@ -144,6 +144,31 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment
 
+  configure-infrastructure:
+    docker:
+      # Docker image here that supports Ansible
+      - image: alpine/ansible
+    steps:
+      - checkout
+      # Add ssh keys with fingerprint
+      - add_ssh_keys:
+              # You can get this ID in the section where you registered the SSH Key
+              fingerprints: ["5e:57:89:00:70:6b:cc:96:3e:8e:80:0c:3e:dd:96:86"] 
+      # attach workspace
+      - attach_workspace:
+            at: ~/ 
+      - run:
+          name: Install dependencies
+          command: |
+            yum install -y tar gzip awscli 
+      - run:
+          name: Configure server
+          command: |
+              cd .circleci/ansible
+              cat inventory.txt 
+              ansible-playbook -i inventory.txt configure-server.yml
+      # Here's where you will add some code to rollback on failure    
+      - destroy-environment
 
 workflows:
   default:
@@ -160,3 +185,5 @@ workflows:
           requires: [build-backend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
