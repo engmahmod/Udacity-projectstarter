@@ -154,13 +154,13 @@ jobs:
       - add_ssh_keys:
               # You can get this ID in the section where you registered the SSH Key
               fingerprints: ["5e:57:89:00:70:6b:cc:96:3e:8e:80:0c:3e:dd:96:86"] 
-      # attach workspace
-      - attach_workspace:
-            at: ~/ 
       - run:
           name: Install dependencies
           command: |
             yum install -y tar gzip awscli ansible
+      # attach workspace
+      - attach_workspace:
+            at: ~/ 
       - run:
           name: Configure server
           command: |
