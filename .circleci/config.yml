@@ -147,7 +147,7 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      - image: alpine/ansible
+      - image: amazon/aws-cli
     steps:
       - checkout
       # Add ssh keys with fingerprint
@@ -160,7 +160,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum install -y tar gzip awscli 
+            yum install -y tar gzip awscli ansible
       - run:
           name: Configure server
           command: |
