@@ -1,30 +1,32 @@
----
-- name: "update yum packages."
-  become: true
-  yum:
-    update_cache: true
+- name: "update apt packages."
+  become: yes
+  apt:
+    update_cache: yes
 
 - name: "upgrade packages"
-  become: true
-  yum:
-    name: "*"
-    state: latest
+  become: yes
+  apt:
+    upgrade: yes
 
-- name: "install node dependencies"
-  become: true
-  yum:
-    name:
-      - nodejs
-      #- npm # TODO: additional steps required before installing this
-    state: present
-    update_cache: true
+
+- name: remove dependencies that are no longer required
+  become: yes
+  apt:
+    autoremove: yes
+
+- name: "install dependencies."
+  become: yes
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
 
 - name: "install pm2"
-  become: true
+  become: yes
   npm:
     name: pm2
-    global: true
-    production: true
+    global: yes
+    production: yes
     state: present
 
 - name: "install python for Ansible."
