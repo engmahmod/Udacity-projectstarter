@@ -1,6 +1,28 @@
 version: 2.1
 
 commands:
+
+  awscli:
+      description: Install AWS CLI v2
+      steps:
+        - run:
+            name: Install AWS CLI v2
+            command: |
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+              sudo ./aws/install
+
+  ansible:
+      description: Install Ansible
+      steps:
+        - run:
+            name: Install Ansible
+            command: |
+              sudo apt update
+              sudo apt install software-properties-common -y
+              sudo add-apt-repository --yes --update ppa:ansible/ansible
+              sudo apt install ansible -y
+
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     steps:
@@ -10,7 +32,7 @@ commands:
           command: |
             aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
             aws cloudformation delete-stack --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
-            aws s3 rm s3://"udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
+            aws s3 rm s3://udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 
 jobs:
   build-frontend:
@@ -148,20 +170,15 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      - image: python:3.7-alpine3.16
+      - image: cimg/base:stable
     steps:
       - checkout
       # Add ssh keys with fingerprint
       - add_ssh_keys:
               # You can get this ID in the section where you registered the SSH Key
               fingerprints: ["5e:57:89:00:70:6b:cc:96:3e:8e:80:0c:3e:dd:96:86"] 
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible 
-            python -m pip install awscli
-            python -m pip install yum
-            yum install -y tar gzip awscli
+      - awscli
+      - ansible
       # attach workspace
       - attach_workspace:
             at: ~/ 
