@@ -413,39 +413,39 @@ jobs:
       - destroy-environment
       - revert-migrations 
 
-cleanup:
-    docker:
-      # Docker image here
-      - image : cimg/base:stable
-    steps:
-      # Checkout code from git
-      - checkout
-      - awscli
-      - nodejs
-      - attach_workspace:
-          at: ~/
+  cleanup:
+      docker:
+        # Docker image here
+        - image : cimg/base:stable
+      steps:
+        # Checkout code from git
+        - checkout
+        - awscli
+        - nodejs
+        - attach_workspace:
+            at: ~/
 
-      - run:
-          name: Remove old stacks and files
-          command: |
-            pwd
-            ls
-            cat ~/textfile.txt
-            export OLD_WORKFLOW_ID=$(cat ~/textfile.txt)
-            export STACKS=($(aws cloudformation list-stacks \
-                --query "StackSummaries[*].StackName" \
-                --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-            echo Old Wokflow ID: "${OLD_WORKFLOW_ID}"
-            echo Stack names: "${STACKS[@]}"
-            if [[ "${STACKS[@]}" =~ "${OLD_WORKFLOW_ID}" ]]
-            then
-              echo "-----------------DELETE CONFIRMED--------------------------"
-              aws s3 rm s3://udapeople-${OLD_WORKFLOW_ID} --recursive
-              aws cloudformation delete-stack --stack-name "udapeople-backend-${OLD_WORKFLOW_ID}"
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLD_WORKFLOW_ID}"
-            else
-              echo "-------------------Cannot Delete----------------------------"
-            fi
+        - run:
+            name: Remove old stacks and files
+            command: |
+              pwd
+              ls
+              cat ~/textfile.txt
+              export OLD_WORKFLOW_ID=$(cat ~/textfile.txt)
+              export STACKS=($(aws cloudformation list-stacks \
+                  --query "StackSummaries[*].StackName" \
+                  --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+              echo Old Wokflow ID: "${OLD_WORKFLOW_ID}"
+              echo Stack names: "${STACKS[@]}"
+              if [[ "${STACKS[@]}" =~ "${OLD_WORKFLOW_ID}" ]]
+              then
+                echo "-----------------DELETE CONFIRMED--------------------------"
+                aws s3 rm s3://udapeople-${OLD_WORKFLOW_ID} --recursive
+                aws cloudformation delete-stack --stack-name "udapeople-backend-${OLD_WORKFLOW_ID}"
+                aws cloudformation delete-stack --stack-name "udapeople-frontend-${OLD_WORKFLOW_ID}"
+              else
+                echo "-------------------Cannot Delete----------------------------"
+              fi
 
 workflows:
   default:
