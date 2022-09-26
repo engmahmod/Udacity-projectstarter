@@ -344,7 +344,7 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - install_awscli
+      - awscli
       - run:
           name: Backend smoke test.
           command: |
